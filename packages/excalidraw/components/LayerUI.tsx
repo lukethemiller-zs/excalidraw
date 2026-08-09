@@ -58,6 +58,7 @@ import { HelpDialog } from "./HelpDialog";
 import { HintViewer } from "./HintViewer";
 import { ImageExportDialog } from "./ImageExportDialog";
 import { InspirationPanel } from "./InspirationPanel";
+import { FocusTimer } from "./FocusTimer";
 import { Island } from "./Island";
 import { JSONExportDialog } from "./JSONExportDialog";
 import { LaserPointerButton } from "./LaserPointerButton";
@@ -439,6 +440,13 @@ const LayerUI = ({
               appState,
             )}
             <InspirationPanel />
+            <FocusTimer
+              onExpire={() =>
+                setAppState({
+                  toast: { message: t("focusTimer.expired"), closable: true },
+                })
+              }
+            />
             {!appState.viewModeEnabled &&
               appState.openDialog?.name !== "elementLinkSelector" &&
               // hide button when sidebar docked

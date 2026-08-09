@@ -358,6 +358,24 @@
     "selectedShapeActions": "Selected shape actions",
     "shapes": "Shapes"
   },
+  "focusTimer": {
+    "title": "Focus timer",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "customDuration": "Custom duration",
+    "customHours": "Hours",
+    "customMinutesShort": "Minutes",
+    "expired": "Time's up!",
+    "preset1": "1 min",
+    "preset5": "5 min",
+    "preset10": "10 min",
+    "preset15": "15 min",
+    "preset60": "1 hr",
+    "preset120": "2 hr",
+    "remaining": "{{time}} remaining"
+  },
   "hints": {
     "dismissSearch": "{{shortcut}} to dismiss search",
     "canvasPanning": "To move canvas, hold {{shortcut_1}} or {{shortcut_2}} while dragging, or use the hand tool",
