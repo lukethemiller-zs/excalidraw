@@ -53,8 +53,24 @@ export const FocusTimer = ({ onExpire }: { onExpire: () => void }) => {
   } | null>(null);
   const [, setTick] = useState(0);
   const hasExpiredRef = useRef(false);
+  const onExpireRef = useRef(onExpire);
   const anchorRef = useRef<HTMLDivElement>(null);
   const appState = useUIAppState();
+
+  useEffect(() => {
+    onExpireRef.current = onExpire;
+  }, [onExpire]);
+
+  const expireTimer = useCallback(() => {
+    if (hasExpiredRef.current) {
+      return;
+    }
+    hasExpiredRef.current = true;
+    setRemainingMs(0);
+    setEndsAt(null);
+    setStatus("expired");
+    onExpireRef.current();
+  }, []);
 
   const getRemainingMs = useCallback((): number => {
     if (status === "running" && endsAt !== null) {
@@ -75,19 +91,14 @@ export const FocusTimer = ({ onExpire }: { onExpire: () => void }) => {
     const intervalId = window.setInterval(() => {
       const left = endsAt - Date.now();
       if (left <= 0) {
-        if (!hasExpiredRef.current) {
-          hasExpiredRef.current = true;
-          setRemainingMs(0);
-          setStatus("expired");
-          onExpire();
-        }
+        expireTimer();
         return;
       }
       setTick((n) => n + 1);
     }, TICK_MS);
 
     return () => clearInterval(intervalId);
-  }, [status, endsAt, onExpire]);
+  }, [status, endsAt, expireTimer]);
 
   useLayoutEffect(() => {
     if (open && anchorRef.current) {
@@ -131,6 +142,10 @@ export const FocusTimer = ({ onExpire }: { onExpire: () => void }) => {
       return;
     }
     const left = Math.max(0, endsAt - Date.now());
+    if (left <= 0) {
+      expireTimer();
+      return;
+    }
     setRemainingMs(left);
     setEndsAt(null);
     setStatus("paused");

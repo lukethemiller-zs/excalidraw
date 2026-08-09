@@ -112,6 +112,26 @@ describe("FocusTimer", () => {
     );
   });
 
+  it("pausing at zero triggers expiry toast", async () => {
+    await render(<Excalidraw />);
+
+    ensureTimerPopoverOpen();
+    fireEvent.click(document.querySelector(".FocusTimer__preset")!);
+    fireEvent.click(getControl("Start"));
+
+    vi.advanceTimersByTime(60_000);
+
+    fireEvent.click(getControl("Pause"));
+
+    await waitFor(() => {
+      expect(document.querySelector(".Toast__message")?.textContent).toBe(
+        "Time's up!",
+      );
+    });
+
+    expect(document.querySelector(".FocusTimer__button--expired")).not.toBeNull();
+  });
+
   it("fires expiry toast when countdown reaches zero", async () => {
     await render(<Excalidraw />);
 
