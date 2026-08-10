@@ -17,6 +17,9 @@ const SUGGESTIONS = [
 ] as const;
 
 const PANEL_WIDTH = 260;
+/** Stable ids so the trigger's aria-controls/labelledby stay linked when open. */
+export const INSPIRATION_PANEL_ID = "inspiration-panel";
+export const INSPIRATION_PANEL_TITLE_ID = "inspiration-panel-title";
 
 export const InspirationPanel = () => {
   const [open, setOpen] = useState(false);
@@ -48,6 +51,7 @@ export const InspirationPanel = () => {
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="dialog"
+        aria-controls={INSPIRATION_PANEL_ID}
       >
         ✨ Inspiration
       </button>
@@ -63,24 +67,37 @@ export const InspirationPanel = () => {
           onCloseRequest={handleClose}
           className="InspirationPanel__popover"
         >
-          <Island padding={2} className="InspirationPanel__panel">
-            <div className="InspirationPanel__title">Get inspired</div>
-            {SUGGESTIONS.map((suggestion) => (
-              <button
-                key={suggestion.title}
-                type="button"
-                className="InspirationPanel__card"
-                onClick={handleClose}
+          {/* Match aria-haspopup="dialog": expose a named dialog region for AT. */}
+          <div
+            id={INSPIRATION_PANEL_ID}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={INSPIRATION_PANEL_TITLE_ID}
+          >
+            <Island padding={2} className="InspirationPanel__panel">
+              <div
+                className="InspirationPanel__title"
+                id={INSPIRATION_PANEL_TITLE_ID}
               >
-                <div className="InspirationPanel__card-title">
-                  {suggestion.title}
-                </div>
-                <div className="InspirationPanel__card-desc">
-                  {suggestion.desc}
-                </div>
-              </button>
-            ))}
-          </Island>
+                Get inspired
+              </div>
+              {SUGGESTIONS.map((suggestion) => (
+                <button
+                  key={suggestion.title}
+                  type="button"
+                  className="InspirationPanel__card"
+                  onClick={handleClose}
+                >
+                  <div className="InspirationPanel__card-title">
+                    {suggestion.title}
+                  </div>
+                  <div className="InspirationPanel__card-desc">
+                    {suggestion.desc}
+                  </div>
+                </button>
+              ))}
+            </Island>
+          </div>
         </Popover>
       )}
     </div>
