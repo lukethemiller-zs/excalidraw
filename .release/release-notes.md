@@ -24,4 +24,5 @@ The timer is mounted in `LayerUI` next to the Inspiration Panel and follows the 
 - Timer state is **not persisted** across page reloads.
 - Expiry is **visual + toast only** — no audio alarm.
 - In **zen mode**, the top-right chrome (including the timer badge) slides off-screen.
+- **Phone form factor:** timer is desktop `LayerUI` only — not shown in `MobileMenu`.
 - English strings only (`en.json`); other locales fall back to English for timer labels.
