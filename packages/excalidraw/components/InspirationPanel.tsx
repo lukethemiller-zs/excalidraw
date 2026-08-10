@@ -1,20 +1,40 @@
-/** Cosmetic "Inspiration" entry point: toggles a static suggestions popover.
- *  Prototype only — no APIs, no persistence, no canvas side-effects. */
+/** Inspiration entry point: opens suggestion cards that insert starter canvas content. */
 import clsx from "clsx";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 import { useUIAppState } from "../context/ui-appState";
 
+import { useApp } from "./App";
 import { Island } from "./Island";
 import { Popover } from "./Popover";
+import {
+  getInspirationStarterElements,
+  type InspirationSuggestionId,
+} from "./inspirationTemplates";
 
 import "./InspirationPanel.scss";
 
-const SUGGESTIONS = [
-  { title: "Generate campaign ideas", desc: "Kick off a fresh brief" },
-  { title: "Create a moodboard", desc: "Collect visual inspiration" },
-  { title: "Explore brand colours", desc: "Try new palette directions" },
-] as const;
+const SUGGESTIONS: ReadonlyArray<{
+  id: InspirationSuggestionId;
+  title: string;
+  desc: string;
+}> = [
+  {
+    id: "generate-campaign-ideas",
+    title: "Generate campaign ideas",
+    desc: "Kick off a fresh brief",
+  },
+  {
+    id: "create-moodboard",
+    title: "Create a moodboard",
+    desc: "Collect visual inspiration",
+  },
+  {
+    id: "explore-brand-colours",
+    title: "Explore brand colours",
+    desc: "Try new palette directions",
+  },
+];
 
 const PANEL_WIDTH = 260;
 
@@ -26,6 +46,7 @@ export const InspirationPanel = () => {
   } | null>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
   const appState = useUIAppState();
+  const { onInsertElements, focusContainer } = useApp();
 
   useLayoutEffect(() => {
     if (open && anchorRef.current) {
@@ -38,6 +59,15 @@ export const InspirationPanel = () => {
   }, [open]);
 
   const handleClose = useCallback(() => setOpen(false), []);
+
+  const handleSuggestionClick = useCallback(
+    (suggestionId: InspirationSuggestionId) => {
+      onInsertElements(getInspirationStarterElements(suggestionId));
+      setOpen(false);
+      focusContainer();
+    },
+    [focusContainer, onInsertElements],
+  );
 
   return (
     <div className="InspirationPanel" ref={anchorRef}>
@@ -67,10 +97,10 @@ export const InspirationPanel = () => {
             <div className="InspirationPanel__title">Get inspired</div>
             {SUGGESTIONS.map((suggestion) => (
               <button
-                key={suggestion.title}
+                key={suggestion.id}
                 type="button"
                 className="InspirationPanel__card"
-                onClick={handleClose}
+                onClick={() => handleSuggestionClick(suggestion.id)}
               >
                 <div className="InspirationPanel__card-title">
                   {suggestion.title}
