@@ -58,6 +58,7 @@ import { HelpDialog } from "./HelpDialog";
 import { HintViewer } from "./HintViewer";
 import { ImageExportDialog } from "./ImageExportDialog";
 import { InspirationPanel } from "./InspirationPanel";
+import { FocusTimer } from "./FocusTimer";
 import { Island } from "./Island";
 import { JSONExportDialog } from "./JSONExportDialog";
 import { LaserPointerButton } from "./LaserPointerButton";
@@ -438,6 +439,7 @@ const LayerUI = ({
               editorInterface.formFactor === "phone",
               appState,
             )}
+            <FocusTimer />
             <InspirationPanel />
             {!appState.viewModeEnabled &&
               appState.openDialog?.name !== "elementLinkSelector" &&

@@ -564,6 +564,20 @@
     "unrecognizedLinkFormat": "The link you embedded does not match the expected format. Please try to paste the 'embed' string provided by the source site",
     "elementLinkCopied": "Link copied to clipboard"
   },
+  "focusTimer": {
+    "label": "Timer",
+    "title": "Workshop timer",
+    "presets": "Quick presets",
+    "customDuration": "Custom duration",
+    "minutes": "minutes",
+    "minutesShort": "{{count}}m",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "expired": "Workshop timer finished",
+    "timeUp": "Time is up"
+  },
   "colors": {
     "transparent": "Transparent",
     "black": "Black",
