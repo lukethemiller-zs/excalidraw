@@ -1,13 +1,14 @@
-## 🚀 Adobe Red Toolbar
+## 🚀 Adobe Red Toolbar & Whiteboard Dev Skills
 
 ### What's changed
-The primary shapes toolbar now uses Adobe brand red (`#ff0000`) as its background in both light and dark themes, replacing the previous grey surface tokens.
+- **Shapes toolbar** — `.Island.App-toolbar` now uses solid Adobe red (`#ff0000`) in light and dark themes instead of grey surface tokens (`--color-surface-mid` / `--color-surface-high`).
+- **Cursor skills** — added `start-whiteboard` and `stop-whiteboard` agent skills that document how to start root `yarn start` in the background and stop the Vite/dev server via the process tree (no `yarn stop`).
 
 ### User impact
-The toolbar is more visually distinct and aligned with Adobe branding, making the main drawing tools easier to spot at a glance.
+The primary drawing toolbar is easier to spot and matches Adobe branding. Agents and developers get a consistent way to start and stop the local whiteboard app without guessing ports or scripts.
 
 ### Technical notes
-Updated `.Island.App-toolbar` background in `packages/excalidraw/components/Toolbar.scss` only — no behaviour or API changes.
+Style change is confined to `packages/excalidraw/components/Toolbar.scss` (no runtime/API behaviour changes). Skills live under `.cursor/skills/` and do not affect the shipped app bundle.
 
 ### Testing
-Verified visually in the running whiteboard app (`yarn start` at http://localhost:3003/). Style-only change; no new automated tests.
+Toolbar change verified visually in the running whiteboard app (`yarn start`). Style- and docs-only PR; no new automated tests.
