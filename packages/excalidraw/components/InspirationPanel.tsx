@@ -36,6 +36,7 @@ export const InspirationPanel = () => {
     left: number;
   } | null>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const appState = useUIAppState();
 
   useLayoutEffect(() => {
@@ -48,7 +49,13 @@ export const InspirationPanel = () => {
     }
   }, [open]);
 
-  const handleClose = useCallback(() => setOpen(false), []);
+  // Restore focus to the trigger so keyboard users don't land on <body>.
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    requestAnimationFrame(() => {
+      triggerRef.current?.focus();
+    });
+  }, []);
 
   // Modal dialogs must dismiss on Escape; capture so App-level handlers don't win.
   useEffect(() => {
@@ -70,13 +77,14 @@ export const InspirationPanel = () => {
   return (
     <div className="InspirationPanel" ref={anchorRef}>
       <button
+        ref={triggerRef}
         type="button"
         className={clsx("InspirationPanel__button", { active: open })}
         onPointerDown={(event) => event.stopPropagation()}
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-controls={INSPIRATION_PANEL_ID}
+        aria-controls={open ? INSPIRATION_PANEL_ID : undefined}
       >
         ✨ Inspiration
       </button>

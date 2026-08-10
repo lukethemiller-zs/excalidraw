@@ -21,7 +21,7 @@ describe("InspirationPanel", () => {
     expect(trigger).not.toBeNull();
     expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
     expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(trigger).toHaveAttribute("aria-controls", INSPIRATION_PANEL_ID);
+    expect(trigger).not.toHaveAttribute("aria-controls");
     expect(container.querySelector(`#${INSPIRATION_PANEL_ID}`)).toBeNull();
 
     fireEvent.click(trigger!);
@@ -37,6 +37,7 @@ describe("InspirationPanel", () => {
       );
       expect(dialog).toHaveFocus();
       expect(trigger).toHaveAttribute("aria-expanded", "true");
+      expect(trigger).toHaveAttribute("aria-controls", INSPIRATION_PANEL_ID);
       expect(
         container.querySelector(`#${INSPIRATION_PANEL_TITLE_ID}`),
       ).toHaveTextContent("Get inspired");
@@ -49,6 +50,7 @@ describe("InspirationPanel", () => {
     await waitFor(() => {
       expect(container.querySelector(`#${INSPIRATION_PANEL_ID}`)).toBeNull();
       expect(trigger).toHaveAttribute("aria-expanded", "false");
+      expect(trigger).toHaveFocus();
     });
   });
 
@@ -60,7 +62,9 @@ describe("InspirationPanel", () => {
     fireEvent.click(trigger!);
 
     await waitFor(() => {
-      expect(container.querySelector(`#${INSPIRATION_PANEL_ID}`)).not.toBeNull();
+      expect(
+        container.querySelector(`#${INSPIRATION_PANEL_ID}`),
+      ).not.toBeNull();
     });
 
     Keyboard.keyDown(KEYS.ESCAPE);
@@ -68,6 +72,7 @@ describe("InspirationPanel", () => {
     await waitFor(() => {
       expect(container.querySelector(`#${INSPIRATION_PANEL_ID}`)).toBeNull();
       expect(trigger).toHaveAttribute("aria-expanded", "false");
+      expect(trigger).toHaveFocus();
     });
   });
 });
