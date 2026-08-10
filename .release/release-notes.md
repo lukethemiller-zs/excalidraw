@@ -12,7 +12,7 @@ The skill documents:
 - Wait for Vite’s `Local:` URL and report the **exact** port (default from `VITE_APP_PORT`, typically 3000; next free port if busy)
 - Optional browser open on macOS, plus common troubleshooting (sandbox EPERM, port in use, blank page, stale bundle)
 
-`disable-model-invocation: true` — agents invoke it when the user asks to start/run/launch the whiteboard locally, not automatically.
+`disable-model-invocation: true` — the skill is not auto-selected from natural language; invoke it explicitly (e.g. `/start-whiteboard`).
 
 ### User impact
 
