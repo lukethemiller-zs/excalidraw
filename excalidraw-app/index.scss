@@ -1,8 +1,11 @@
 @import "../packages/excalidraw/css/variables.module.scss";
 
 .excalidraw-app {
-  .excalidraw-ui-top-left .ExcalidrawLogo {
-    pointer-events: none;
+  .excalidraw-ui-top-left .excalidraw-adobe-logo-link {
+    cursor: pointer;
+    display: inline-flex;
+    text-decoration: none;
+    color: inherit;
   }
 }
 

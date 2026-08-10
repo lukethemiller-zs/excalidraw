@@ -970,7 +970,17 @@ const ExcalidrawWrapper = () => {
             return null;
           }
 
-          return <ExcalidrawLogo size="xs" />;
+          return (
+            <a
+              className="excalidraw-adobe-logo-link"
+              href="https://www.adobe.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Adobe"
+            >
+              <ExcalidrawLogo size="xs" />
+            </a>
+          );
         }}
         renderTopRightUI={(isMobile) => {
           if (isMobile || !collabAPI || isCollabDisabled) {
