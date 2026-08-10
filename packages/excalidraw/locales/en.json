@@ -549,6 +549,18 @@
     "versionNotAvailable": "Version not available",
     "width": "Width"
   },
+  "focusTimer": {
+    "label": "⏱ Timer",
+    "title": "Focus timer",
+    "minutesShort": "{{minutes}}m",
+    "minutes": "min",
+    "custom": "Custom",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "timeUp": "Time's up!"
+  },
   "toast": {
     "addedToLibrary": "Added to library",
     "copyStyles": "Copied styles.",
