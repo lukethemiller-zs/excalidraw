@@ -64,8 +64,12 @@ describe("brainstormModeHelpers", () => {
       const input = document.createElement("input");
       const textarea = document.createElement("textarea");
       const select = document.createElement("select");
+      // jsdom's contentEditable attribute does not always flip isContentEditable.
       const editable = document.createElement("div");
-      editable.contentEditable = "true";
+      Object.defineProperty(editable, "isContentEditable", {
+        configurable: true,
+        get: () => true,
+      });
       const plain = document.createElement("div");
 
       expect(isEditableTarget(input)).toBe(true);
