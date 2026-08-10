@@ -111,6 +111,16 @@ export const PlusIcon = createIcon(
   tablerIconProps,
 );
 
+// tabler-icons: clock
+export const timerIcon = createIcon(
+  <g strokeWidth="1.5">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 3" />
+  </g>,
+  tablerIconProps,
+);
+
 // tabler-icons: dots-vertical
 export const DotsIcon = createIcon(
   <g strokeWidth="1.5">
