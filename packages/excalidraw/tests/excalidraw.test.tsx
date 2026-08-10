@@ -379,6 +379,35 @@ describe("<Excalidraw/>", () => {
       expect(textInput?.value).toEqual(name);
       expect(textInput?.nodeName).toBe("INPUT");
     });
+
+    it("should update export filename when edited in image export dialog", async () => {
+      const { container } = await render(<Excalidraw />);
+      toggleMenu(container);
+      fireEvent.click(queryByTestId(container, "image-export-button")!);
+
+      const textInput = document.querySelector(
+        ".ImageExportModal .ImageExportModal__preview__filename .TextInput",
+      ) as HTMLInputElement;
+
+      fireEvent.change(textInput, { target: { value: "my-whiteboard" } });
+
+      await waitFor(() => {
+        expect(h.state.name).toBe("my-whiteboard");
+      });
+    });
+
+    it("should show project name field in json export dialog", async () => {
+      const { container } = await render(<Excalidraw />);
+      toggleMenu(container);
+      fireEvent.click(queryByTestId(container, "json-export-button")!);
+
+      const textInput = document.querySelector(
+        ".ExportDialog .ProjectName .TextInput",
+      ) as HTMLInputElement;
+
+      expect(textInput).not.toBeNull();
+      expect(textInput.value).toContain(t("labels.untitled"));
+    });
   });
 
   describe("Test autoFocus prop", () => {

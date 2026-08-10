@@ -7,7 +7,6 @@ import type { NonDeletedExcalidrawElement } from "@excalidraw/element/types";
 import { actionSaveFileToDisk } from "../actions/actionExport";
 
 import { trackEvent } from "../analytics";
-import { nativeFileSystemSupported } from "../data/filesystem";
 import { t } from "../i18n";
 
 import { Card } from "./Card";
@@ -55,8 +54,7 @@ const JSONExportModal = ({
             <h2>{t("exportDialog.disk_title")}</h2>
             <div className="Card-details">
               {t("exportDialog.disk_details")}
-              {!nativeFileSystemSupported &&
-                actionManager.renderAction("changeProjectName")}
+              {actionManager.renderAction("changeProjectName")}
             </div>
             <ToolButton
               className="Card-button"
