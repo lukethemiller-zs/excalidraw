@@ -18,7 +18,7 @@ type Props = {
   viewportWidth?: number;
   viewportHeight?: number;
   className?: string;
-};
+} & Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "className">;
 
 export const Popover = ({
   children,
@@ -31,6 +31,8 @@ export const Popover = ({
   viewportWidth = window.innerWidth,
   viewportHeight = window.innerHeight,
   className,
+  // Allow callers to attach dialog/menu semantics to the focused root node.
+  ...rest
 }: Props) => {
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -150,7 +152,12 @@ export const Popover = ({
   }, [onCloseRequest]);
 
   return (
-    <div className={clsx("popover", className)} ref={popoverRef} tabIndex={-1}>
+    <div
+      className={clsx("popover", className)}
+      ref={popoverRef}
+      tabIndex={-1}
+      {...rest}
+    >
       {children}
     </div>
   );

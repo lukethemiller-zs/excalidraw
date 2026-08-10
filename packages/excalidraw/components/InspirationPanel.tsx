@@ -1,7 +1,15 @@
 /** Cosmetic "Inspiration" entry point: toggles a static suggestions popover.
  *  Prototype only — no APIs, no persistence, no canvas side-effects. */
 import clsx from "clsx";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+
+import { KEYS } from "@excalidraw/common";
 
 import { useUIAppState } from "../context/ui-appState";
 
@@ -42,6 +50,23 @@ export const InspirationPanel = () => {
 
   const handleClose = useCallback(() => setOpen(false), []);
 
+  // Modal dialogs must dismiss on Escape; capture so App-level handlers don't win.
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== KEYS.ESCAPE) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      handleClose();
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [open, handleClose]);
+
   return (
     <div className="InspirationPanel" ref={anchorRef}>
       <button
@@ -66,38 +91,35 @@ export const InspirationPanel = () => {
           viewportHeight={appState.height}
           onCloseRequest={handleClose}
           className="InspirationPanel__popover"
+          // Put dialog semantics on the focused Popover root (not a nested node).
+          id={INSPIRATION_PANEL_ID}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={INSPIRATION_PANEL_TITLE_ID}
         >
-          {/* Match aria-haspopup="dialog": expose a named dialog region for AT. */}
-          <div
-            id={INSPIRATION_PANEL_ID}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={INSPIRATION_PANEL_TITLE_ID}
-          >
-            <Island padding={2} className="InspirationPanel__panel">
-              <div
-                className="InspirationPanel__title"
-                id={INSPIRATION_PANEL_TITLE_ID}
+          <Island padding={2} className="InspirationPanel__panel">
+            <div
+              className="InspirationPanel__title"
+              id={INSPIRATION_PANEL_TITLE_ID}
+            >
+              Get inspired
+            </div>
+            {SUGGESTIONS.map((suggestion) => (
+              <button
+                key={suggestion.title}
+                type="button"
+                className="InspirationPanel__card"
+                onClick={handleClose}
               >
-                Get inspired
-              </div>
-              {SUGGESTIONS.map((suggestion) => (
-                <button
-                  key={suggestion.title}
-                  type="button"
-                  className="InspirationPanel__card"
-                  onClick={handleClose}
-                >
-                  <div className="InspirationPanel__card-title">
-                    {suggestion.title}
-                  </div>
-                  <div className="InspirationPanel__card-desc">
-                    {suggestion.desc}
-                  </div>
-                </button>
-              ))}
-            </Island>
-          </div>
+                <div className="InspirationPanel__card-title">
+                  {suggestion.title}
+                </div>
+                <div className="InspirationPanel__card-desc">
+                  {suggestion.desc}
+                </div>
+              </button>
+            ))}
+          </Island>
         </Popover>
       )}
     </div>

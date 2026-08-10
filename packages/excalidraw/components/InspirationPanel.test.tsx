@@ -1,13 +1,12 @@
 /** Covers Inspiration Panel open/close and dialog accessibility wiring. */
 import React from "react";
+import { fireEvent, queryByText } from "@testing-library/react";
+
+import { KEYS } from "@excalidraw/common";
 
 import { Excalidraw } from "../index";
-import {
-  fireEvent,
-  queryByText,
-  render,
-  waitFor,
-} from "../tests/test-utils";
+import { Keyboard } from "../tests/helpers/ui";
+import { render, waitFor } from "../tests/test-utils";
 
 import {
   INSPIRATION_PANEL_ID,
@@ -36,6 +35,7 @@ describe("InspirationPanel", () => {
         "aria-labelledby",
         INSPIRATION_PANEL_TITLE_ID,
       );
+      expect(dialog).toHaveFocus();
       expect(trigger).toHaveAttribute("aria-expanded", "true");
       expect(
         container.querySelector(`#${INSPIRATION_PANEL_TITLE_ID}`),
@@ -45,6 +45,25 @@ describe("InspirationPanel", () => {
     const suggestion = queryByText(container, "Generate campaign ideas");
     expect(suggestion).not.toBeNull();
     fireEvent.click(suggestion!);
+
+    await waitFor(() => {
+      expect(container.querySelector(`#${INSPIRATION_PANEL_ID}`)).toBeNull();
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+    });
+  });
+
+  it("closes the dialog when Escape is pressed", async () => {
+    const { container } = await render(<Excalidraw />);
+
+    const trigger = queryByText(container, "✨ Inspiration");
+    expect(trigger).not.toBeNull();
+    fireEvent.click(trigger!);
+
+    await waitFor(() => {
+      expect(container.querySelector(`#${INSPIRATION_PANEL_ID}`)).not.toBeNull();
+    });
+
+    Keyboard.keyDown(KEYS.ESCAPE);
 
     await waitFor(() => {
       expect(container.querySelector(`#${INSPIRATION_PANEL_ID}`)).toBeNull();
