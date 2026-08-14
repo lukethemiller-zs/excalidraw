@@ -52,11 +52,6 @@ vi.mock("@excalidraw/excalidraw", () => {
   };
 });
 
-vi.mock("@excalidraw/excalidraw/components/icons", () => ({
-  messageCircleIcon: <svg data-testid="comments-icon" />,
-  presentationIcon: <svg data-testid="presentation-icon" />,
-}));
-
 vi.mock("@excalidraw/excalidraw/components/LinkButton", () => ({
   LinkButton: ({ children }: { children: React.ReactNode }) => (
     <a href="#">{children}</a>
