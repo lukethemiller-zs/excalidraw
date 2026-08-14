@@ -37,11 +37,8 @@
     }
 
     &.active {
-      background: var(
-        --color-surface-primary-container,
-        var(--island-bg-color)
-      );
-      border-color: var(--button-active-border, var(--color-primary-darkest));
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.55);
     }
 
     svg {
@@ -58,7 +55,7 @@
   .mobile-toolbar-separator {
     width: 1px;
     height: 24px;
-    background: var(--default-border-color);
+    background: rgba(255, 255, 255, 0.35);
     margin: 0 2px;
     flex-shrink: 0;
   }

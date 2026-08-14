@@ -1,12 +1,12 @@
 import {
   CaptureUpdateAction,
   convertToExcalidrawElements,
-  useAdobeWhiteboardAPI,
+  useExcalidrawAPI,
 } from "@excalidraw/excalidraw";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // #region agent log
-fetch('http://127.0.0.1:7593/ingest/9bf2aae7-3da4-4585-9525-b80866c1ecc1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'bb91c7'},body:JSON.stringify({sessionId:'bb91c7',runId:'pre-fix',hypothesisId:'C',location:'excalidraw-app/components/BrainstormMode.tsx:module',message:'BrainstormMode module evaluated',data:{useAdobeWhiteboardAPIType:typeof useAdobeWhiteboardAPI},timestamp:Date.now()})}).catch(()=>{});
+fetch('http://127.0.0.1:7593/ingest/9bf2aae7-3da4-4585-9525-b80866c1ecc1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'bb91c7'},body:JSON.stringify({sessionId:'bb91c7',runId:'pre-fix',hypothesisId:'C',location:'excalidraw-app/components/BrainstormMode.tsx:module',message:'BrainstormMode module evaluated',data:{useExcalidrawAPIType:typeof useExcalidrawAPI},timestamp:Date.now()})}).catch(()=>{});
 // #endregion
 
 const STICKY_PALETTE = ["#fff3bf", "#ffc9c9", "#a5d8ff", "#b2f2bb"];
@@ -52,7 +52,7 @@ const getStickyPosition = (
 };
 
 export const BrainstormMode = () => {
-  const adobeWhiteboardAPI = useAdobeWhiteboardAPI();
+  const excalidrawAPI = useExcalidrawAPI();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -100,11 +100,11 @@ export const BrainstormMode = () => {
 
   const addSticky = useCallback(() => {
     const trimmedText = text.trim();
-    if (!trimmedText || !adobeWhiteboardAPI) {
+    if (!trimmedText || !excalidrawAPI) {
       return;
     }
 
-    const appState = adobeWhiteboardAPI.getAppState();
+    const appState = excalidrawAPI.getAppState();
     const { scrollX, scrollY, width, height, zoom } = appState;
     const { x, y } = getStickyPosition(
       scrollX,
@@ -138,9 +138,9 @@ export const BrainstormMode = () => {
       },
     ]);
 
-    adobeWhiteboardAPI.updateScene({
+    excalidrawAPI.updateScene({
       elements: [
-        ...adobeWhiteboardAPI.getSceneElementsIncludingDeleted(),
+        ...excalidrawAPI.getSceneElementsIncludingDeleted(),
         ...newElements,
       ],
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
@@ -150,7 +150,7 @@ export const BrainstormMode = () => {
     setDropIndex((prev) => prev + 1);
     setText("");
     requestAnimationFrame(() => inputRef.current?.focus());
-  }, [adobeWhiteboardAPI, colorIndex, dropIndex, text]);
+  }, [excalidrawAPI, colorIndex, dropIndex, text]);
 
   const onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {

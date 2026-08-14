@@ -738,5 +738,15 @@
     "spacebar": "Space",
     "delete": "Delete",
     "mmb": "Scroll wheel"
+  },
+  "focusTimer": {
+    "title": "Timer",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "custom": "Custom",
+    "minutesShort": "m",
+    "timeUp": "Time's up!"
   }
 }

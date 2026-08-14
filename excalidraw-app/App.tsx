@@ -100,6 +100,7 @@ import Collab, {
   isOfflineAtom,
 } from "./collab/Collab";
 import { AppFooter } from "./components/AppFooter";
+import { FocusTimer, FocusTimerTrigger } from "./components/FocusTimer";
 import { AppMainMenu } from "./components/AppMainMenu";
 import { AppWelcomeScreen } from "./components/AppWelcomeScreen";
 import {
@@ -375,6 +376,7 @@ const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [isTimerOpen, setIsTimerOpen] = useState(false);
   const isCollabDisabled = isRunningInIframe();
 
   const { editorTheme, appTheme, setAppTheme } = useHandleAppTheme();
@@ -973,12 +975,17 @@ const ExcalidrawWrapper = () => {
           return <ExcalidrawLogo size="xs" />;
         }}
         renderTopRightUI={(isMobile) => {
-          if (isMobile || !collabAPI || isCollabDisabled) {
+          if (isMobile) {
             return null;
           }
 
           return (
             <div className="excalidraw-ui-top-right">
+              <FocusTimerTrigger
+                isOpen={isTimerOpen}
+                onToggle={() => setIsTimerOpen((open) => !open)}
+              />
+
               {excalidrawAPI?.getEditorInterface().formFactor === "desktop" && (
                 <ExcalidrawPlusPromoBanner
                   isSignedIn={isExcalidrawPlusSignedUser}
@@ -986,13 +993,15 @@ const ExcalidrawWrapper = () => {
               )}
 
               {collabError.message && <CollabError collabError={collabError} />}
-              <LiveCollaborationTrigger
-                isCollaborating={isCollaborating}
-                onSelect={() =>
-                  setShareDialogState({ isOpen: true, type: "share" })
-                }
-                editorInterface={editorInterface}
-              />
+              {!isCollabDisabled && collabAPI && (
+                <LiveCollaborationTrigger
+                  isCollaborating={isCollaborating}
+                  onSelect={() =>
+                    setShareDialogState({ isOpen: true, type: "share" })
+                  }
+                  editorInterface={editorInterface}
+                />
+              )}
             </div>
           );
         }}
@@ -1040,6 +1049,13 @@ const ExcalidrawWrapper = () => {
         </OverwriteConfirmDialog>
         <AppFooter onChange={() => excalidrawAPI?.refresh()} />
         {excalidrawAPI && <AIComponents excalidrawAPI={excalidrawAPI} />}
+        {excalidrawAPI && (
+          <FocusTimer
+            isOpen={isTimerOpen}
+            onClose={() => setIsTimerOpen(false)}
+            excalidrawAPI={excalidrawAPI}
+          />
+        )}
 
         <TTDDialogTrigger />
         {isCollaborating && isOffline && (

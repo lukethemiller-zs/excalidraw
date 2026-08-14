@@ -1,0 +1,144 @@
+@use "../../packages/excalidraw/css/variables.module" as *;
+
+.excalidraw {
+  .FocusTimer-trigger {
+    @include outlineButtonStyles;
+    @include filledButtonOnCanvas;
+
+    width: auto;
+    height: var(--lg-button-size);
+    padding: 0 0.75rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+
+    &.active {
+      box-shadow: 0 0 0 1px var(--color-brand-active);
+    }
+  }
+
+  .FocusTimer-panel {
+    position: absolute;
+    top: 4.5rem;
+    right: 1rem;
+    z-index: var(--zIndex-layerUI);
+    min-width: 280px;
+    max-width: min(320px, calc(100vw - 32px));
+    padding: 0.75rem;
+    border-radius: var(--border-radius-lg);
+    background-color: var(--island-bg-color);
+    box-shadow: var(--shadow-island);
+    font-family: var(--ui-font);
+    transition: box-shadow 0.2s ease;
+
+    &--flash {
+      animation: focus-timer-flash 0.6s ease-in-out 2;
+    }
+  }
+
+  .FocusTimer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .FocusTimer-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary-color);
+  }
+
+  .FocusTimer-close {
+    border: none;
+    background: transparent;
+    color: var(--color-gray-60);
+    cursor: pointer;
+    font-size: 1.125rem;
+    line-height: 1;
+    padding: 0 0.25rem;
+
+    &:hover {
+      color: var(--text-primary-color);
+    }
+  }
+
+  .FocusTimer-display {
+    font-size: 2.5rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.02em;
+
+    &--done {
+      color: var(--color-primary-darkest);
+    }
+  }
+
+  .FocusTimer-presets {
+    display: flex;
+    gap: 0.375rem;
+    margin-bottom: 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  .FocusTimer-preset {
+    flex: 1;
+    min-width: 3.5rem;
+    font-size: 0.75rem;
+    padding: 0.375rem 0.5rem;
+  }
+
+  .FocusTimer-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .FocusTimer-custom-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.375rem 0.5rem;
+    border: 1px solid var(--default-border-color);
+    border-radius: var(--border-radius-md);
+    font-size: 0.8125rem;
+    font-family: var(--ui-font);
+    background: var(--input-bg-color);
+    color: var(--text-primary-color);
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  .FocusTimer-custom-label {
+    font-size: 0.75rem;
+    color: var(--color-gray-60);
+    white-space: nowrap;
+  }
+
+  .FocusTimer-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .FocusTimer-control {
+    flex: 1;
+    min-width: 4.5rem;
+  }
+}
+
+@keyframes focus-timer-flash {
+  0%,
+  100% {
+    box-shadow: var(--shadow-island);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--color-primary),
+      0 0 24px rgba(235, 16, 0, 0.35);
+  }
+}
