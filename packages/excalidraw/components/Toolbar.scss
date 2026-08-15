@@ -1,12 +1,12 @@
 @use "../css/variables.module" as *;
 
 .excalidraw {
-  // Match hamburger menu button grey; Island defaults to white (--island-bg-color).
+  // Adobe brand red toolbar (overrides the default white/grey Island background).
   .Island.App-toolbar {
-    background-color: var(--color-surface-mid);
+    background-color: #fa0f00;
 
     @at-root .excalidraw.theme--dark#{&} {
-      background-color: var(--color-surface-high);
+      background-color: #fa0f00;
     }
   }
 
