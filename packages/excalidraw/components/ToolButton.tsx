@@ -180,6 +180,14 @@ export const ToolButton = React.forwardRef(
             lastPointerTypeRef.current = null;
           });
         }}
+        onClick={() => {
+          // The hidden radio uses pointer-events: none, so some browsers never
+          // emit `change` on label click. Fall back to onChange when the tool
+          // isn't already active (selection→lasso toggles rely on onPointerDown).
+          if (!props.checked) {
+            props.onChange?.({ pointerType: lastPointerTypeRef.current });
+          }
+        }}
       >
         <input
           className={`ToolIcon_type_radio ${sizeCn}`}
