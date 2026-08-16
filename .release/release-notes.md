@@ -1,29 +1,29 @@
-## 🚀 Adobe Whiteboard — Focus Mode, Inspiration Panel & Adobe rebrand
+## 🚀 Focus Timer & Adobe Red Toolbar
 
 ### What's changed
 
-- **Focus Mode** — a new spotlight view that dims every canvas element except the current selection. Toggle it with `Alt+F` or from Main menu → Preferences. It works in view mode, is hidden on phones, and is off by default (the setting is not persisted between sessions).
-- **Inspiration Panel** — a new "✨ Inspiration" button in the top-right UI opens a popover with three static suggestion cards. This is a cosmetic prototype only.
-- **Adobe rebrand** — the app is now "Adobe Whiteboard": Adobe red (`#EB1000`) replaces the purple accent throughout, the logo is the Adobe "A" mark and wordmark, and the favicon, page title, social meta tags and user-facing strings were updated to match. The logo also now appears in the top-left once the welcome screen is dismissed.
-- **UI typography** — interface chrome (menus, dialogs, tooltips, frame labels) now renders in Century Gothic.
-- **Toolbar and canvas polish** — the arrow and ellipse tools swapped positions (arrow is now `4`, ellipse `5`), the shape toolbar background matches the hamburger menu grey, and the default canvas background is off-white (`#f8f9fa`) instead of pure white.
+- **Focus Timer** — a new **Timer** button in the top-right UI (next to Inspiration) opens a workshop countdown panel. Facilitators can pick **1m, 5m, 10m, or 15m** presets, enter a **custom duration** (minutes ≥ 1), and use **Start / Pause / Resume / Reset** while continuing to draw on the canvas. The trigger label stays **Timer** (countdown lives in the panel).
+- **Expiry feedback** — when time runs out, the panel shows **“Time's up!”**, flashes the button/panel in Adobe red, and posts a closable toast with the same message.
+- **Adobe red toolbar** — the main shapes toolbar (`.Island.App-toolbar`) uses `--color-primary` (Adobe red `#EB1000` in light theme) with white tool icons/keybindings, light selected-state pills, eraser/extra-tools contrast, and matching mobile toolbar styling.
 
 ### User impact
 
-Focus Mode is the substantive addition: on a busy board it removes the visual noise around whatever you're working on, which helps during reviews and screen-shares without needing to hide or move anything. The rebrand and toolbar changes give the app a consistent Adobe identity, and the arrow tool moving one slot left puts a more frequently used tool in easier reach.
+Facilitators can run timed brainstorming, voting, and ideation exercises without leaving the canvas. The countdown stays in the editor chrome and does not block normal whiteboard editing. The shapes toolbar also reads clearly as Adobe Whiteboard branding, with stronger icon contrast on the primary red surface.
 
 ### Technical notes
 
-Focus Mode adds a `focusModeEnabled` flag to app state and reuses the existing `reduceAlphaForSelection` path in `renderElement`, so dimming only kicks in when there is an active selection and no new render pass was introduced. It is registered as a standard action with a menu checkbox and shortcut entry, so it picks up command palette and help dialog integration for free. The font change is applied centrally via a new `UI_FONT_FAMILY` constant that `getFontFamilyString` returns for the Assistant font family, meaning it applies without touching individual components. The Inspiration Panel is self-contained and deliberately has no API calls, persistence or canvas side-effects.
+The timer lives in `packages/excalidraw/components/FocusTimer/` and is mounted from desktop `LayerUI` top-right chrome (not phone `MobileMenu`). Countdown state is kept in a local `useFocusTimer` hook (end-time timestamps + `setInterval`), not in global app state, so the editor does not re-render every second. A single hook instance prevents duplicate timers. Toolbar styling is scoped to `Toolbar.scss` via existing `--color-primary` / `--color-icon-white` tokens. New strings are English-only in `en.json`.
 
 ### Testing
 
-Full suite run: **1461 passed, 2 failed, 48 skipped** across 107 test files. Existing snapshot suites were regenerated to absorb the branding, colour and toolbar-ordering changes. No new automated tests were added for Focus Mode, the Inspiration Panel or the rebrand, so those features are covered by manual checks only.
+- **7 new automated tests** in `FocusTimer.test.tsx` — time formatting; countdown/pause/resume/reset/expiry in the hook; full UI start-pause-resume-reset flow; expiry toast.
+- Manual walkthrough: open Timer → 1m → Start → Pause → Resume → draw on canvas → expiry indication; confirm Adobe red shapes toolbar with white icons and selected pill in light mode.
 
 ### Known limitations
 
-- **Two regression tests are failing.** `key 4 selects ellipse tool` and `key 5 selects arrow tool` in `regressionTests.test.tsx` still assert the old tool order; the arrow/ellipse swap changed the numeric keys but the test table was never updated. The letter shortcuts (`O`, `A`) are unaffected. This is a stale test, not a product defect, but it leaves `master` red.
-- **Typecheck is failing on `master`.** `excalidraw-app/components/BrainstormMode.tsx` imports `useAdobeWhiteboardAPI` from `@excalidraw/excalidraw`, but the package exports `useExcalidrawAPI`. `yarn test:typecheck` exits with `TS2305`.
-- **Brainstorm Mode is not shipping.** The component exists but is never rendered anywhere in the app, so the advertised `Cmd/Ctrl+Shift+B` sticky-note capture is unreachable. It is excluded from this release.
-- Focus Mode is deliberately unavailable on phone form factors and its state resets on reload.
-- The Inspiration Panel suggestions are hardcoded and do nothing when clicked beyond closing the popover.
+- **Local-only** — the timer runs per browser session; it is not synced to collaborators and is **not persisted** across reloads.
+- **Desktop chrome only** — Focus Timer is not mounted on phone (`MobileMenu`); zen mode slides the top-right chrome (including Timer) off-screen.
+- **No keyboard shortcut or menu action** yet (panel open/close is button-only).
+- Strings are **English-only** in this PR.
+- Dark theme toolbar uses dark `--color-primary` (`#FF6B57`), not light-mode `#EB1000`.
+- Adobe red toolbar styling has **no dedicated automated tests** (CSS-only change).
