@@ -22,7 +22,7 @@ The timer lives in `packages/excalidraw/components/FocusTimer/` and is mounted f
 ### Known limitations
 
 - **Local-only** — the timer runs per browser session; it is not synced to collaborators and is **not persisted** across reloads.
-- **Desktop chrome only** — Focus Timer is not mounted on phone (`MobileMenu`); zen mode slides the top-right chrome (including Timer) off-screen.
+- **Desktop chrome only** — Focus Timer is not mounted on phone (`MobileMenu`) or in view mode; zen mode slides the top-right chrome (including Timer) off-screen.
 - **No keyboard shortcut or menu action** yet (panel open/close is button-only).
 - Strings are **English-only** in this PR.
 - Dark theme toolbar uses dark `--color-primary` (`#FF6B57`), not light-mode `#EB1000`.
