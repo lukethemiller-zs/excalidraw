@@ -57,6 +57,7 @@ import { FixedSideContainer } from "./FixedSideContainer";
 import { HelpDialog } from "./HelpDialog";
 import { HintViewer } from "./HintViewer";
 import { ImageExportDialog } from "./ImageExportDialog";
+import { FocusTimerButton } from "./FocusTimer/FocusTimerButton";
 import { InspirationPanel } from "./InspirationPanel";
 import { Island } from "./Island";
 import { JSONExportDialog } from "./JSONExportDialog";
@@ -439,6 +440,7 @@ const LayerUI = ({
               appState,
             )}
             <InspirationPanel />
+            {!appState.viewModeEnabled && <FocusTimerButton app={app} />}
             {!appState.viewModeEnabled &&
               appState.openDialog?.name !== "elementLinkSelector" &&
               // hide button when sidebar docked

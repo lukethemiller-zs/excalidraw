@@ -2143,6 +2143,17 @@ export const searchIcon = createIcon(
   tablerIconProps,
 );
 
+// stopwatch — workshop focus timer toolbar button
+export const focusTimerIcon = createIcon(
+  <g strokeWidth={1.5}>
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M5 13a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+    <path d="M12 10v4l2 2" />
+    <path d="M10 2h4" />
+  </g>,
+  tablerIconProps,
+);
+
 // clock-bolt
 export const historyCommandIcon = createIcon(
   <g strokeWidth={1.5}>

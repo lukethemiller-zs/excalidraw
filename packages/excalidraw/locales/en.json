@@ -532,6 +532,21 @@
     "tooltip": "Your drawings are end-to-end encrypted so Adobe's servers will never see them.",
     "link": "Blog post on end-to-end encryption in Adobe"
   },
+  "focusTimer": {
+    "title": "Timer",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "custom": "Custom",
+    "customMinutes": "Custom duration in minutes",
+    "minutes": "min",
+    "expired": "Time's up!",
+    "preset1": "1m",
+    "preset5": "5m",
+    "preset10": "10m",
+    "preset15": "15m"
+  },
   "stats": {
     "angle": "Angle",
     "shapes": "Shapes",
