@@ -312,6 +312,16 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     }
   });
 
+  /** True while the user is mid-edit; remote reconciliation must not run then. */
+  private isLocalEditInProgress = () => {
+    const appState = this.excalidrawAPI.getAppState();
+    return (
+      appState.newElement != null ||
+      appState.editingTextElement != null ||
+      appState.resizingElement != null
+    );
+  };
+
   saveCollabRoomToFirebase = async (
     syncableElements: readonly SyncableExcalidrawElement[],
   ) => {
@@ -326,6 +336,20 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.resetErrorIndicator();
 
       if (this.isCollaborating() && storedElements) {
+        // Periodic Firebase saves are throttled (~20s). The save can finish after
+        // the user has continued drawing; applying that snapshot would fight
+        // local changes and can break store invariants (ErrorSplash).
+        if (this.isLocalEditInProgress()) {
+          return;
+        }
+
+        const localSyncable = getSyncableElements(
+          this.getSceneElementsIncludingDeleted(),
+        );
+        if (getSceneVersion(storedElements) < getSceneVersion(localSyncable)) {
+          return;
+        }
+
         this.handleRemoteSceneUpdate(this._reconcileElements(storedElements));
       }
     } catch (error: any) {

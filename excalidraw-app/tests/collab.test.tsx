@@ -1,4 +1,6 @@
 import { CaptureUpdateAction, newElementWith } from "@excalidraw/excalidraw";
+import { toBrandedType } from "@excalidraw/common";
+import { getSceneVersion } from "@excalidraw/element";
 import {
   createRedoAction,
   createUndoAction,
@@ -23,13 +25,17 @@ Object.defineProperty(window, "crypto", {
     subtle: {
       generateKey: () => {},
       exportKey: () => ({ k: "sTdLvMC_M3V8_vGa3UVRDg" }),
+      importKey: () => Promise.resolve({}),
+      encrypt: () => Promise.resolve(new ArrayBuffer(8)),
     },
   },
 });
 
+let mockSaveToFirebaseReturn: ReturnType<typeof toBrandedType> | null = null;
+
 vi.mock("../../excalidraw-app/data/firebase.ts", () => {
   const loadFromFirebase = async () => null;
-  const saveToFirebase = () => {};
+  const saveToFirebase = async () => mockSaveToFirebaseReturn;
   const isSavedToFirebase = () => true;
   const loadFilesFromFirebase = async () => ({
     loadedFiles: [],
@@ -69,6 +75,22 @@ vi.mock("socket.io-client", () => {
  * i.e. multiplayer history tests could be a good first candidate, as we could test both history stacks simultaneously.
  */
 describe("collaboration", () => {
+  beforeEach(() => {
+    mockSaveToFirebaseReturn = null;
+  });
+
+  afterEach(async () => {
+    mockSaveToFirebaseReturn = null;
+    if (window.collab?.isCollaborating?.()) {
+      window.collab.queueBroadcastAllElements.cancel();
+      window.collab.queueSaveToFirebase.cancel();
+      window.collab.stopCollaboration(false);
+    }
+    await act(async () => {
+      await Promise.resolve();
+    });
+  });
+
   it("should emit two ephemeral increments even though updates get batched", async () => {
     const durableIncrements: DurableIncrement[] = [];
     const ephemeralIncrements: EphemeralIncrement[] = [];
@@ -248,5 +270,104 @@ describe("collaboration", () => {
         expect.objectContaining({ ...rect2Props, isDeleted: true }),
       ]);
     });
+  });
+
+  it("should not reconcile stale Firebase saves while drawing", async () => {
+    await render(<ExcalidrawApp />);
+
+    const rectProps = {
+      type: "rectangle",
+      id: "A",
+      height: 200,
+      width: 100,
+      x: 0,
+      y: 0,
+    } as const;
+
+    const rect = API.createElement({ ...rectProps });
+    API.updateScene({
+      elements: [rect],
+      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+    });
+
+    window.collab.startCollaboration(null);
+
+    await waitFor(() => {
+      expect(window.collab.isCollaborating()).toBe(true);
+    });
+
+    act(() => {
+      h.app.setState({
+        newElement: API.createElement({
+          type: "rectangle",
+          id: "in-progress",
+          height: 100,
+          width: 100,
+          x: 200,
+          y: 0,
+        }),
+      });
+    });
+
+    const staleStoredElements = toBrandedType([
+      newElementWith(h.elements[0], { x: -999 }),
+    ]);
+
+    mockSaveToFirebaseReturn = staleStoredElements;
+
+    await act(async () => {
+      await window.collab.saveCollabRoomToFirebase(staleStoredElements);
+    });
+
+    expect(h.elements[0].x).toBe(0);
+  });
+
+  it("should not reconcile Firebase saves that are behind the local scene", async () => {
+    await render(<ExcalidrawApp />);
+
+    const rectProps = {
+      type: "rectangle",
+      id: "A",
+      height: 200,
+      width: 100,
+      x: 0,
+      y: 0,
+    } as const;
+
+    const rect = API.createElement({ ...rectProps });
+    API.updateScene({
+      elements: [rect],
+      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+    });
+
+    window.collab.startCollaboration(null);
+
+    await waitFor(() => {
+      expect(window.collab.isCollaborating()).toBe(true);
+    });
+
+    act(() => {
+      h.app.updateScene({
+        elements: [newElementWith(h.elements[0], { x: 150 })],
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+      });
+    });
+
+    const staleStoredElements = toBrandedType([
+      newElementWith(h.elements[0], { x: -999, version: h.elements[0].version - 1 }),
+    ]);
+
+    mockSaveToFirebaseReturn = staleStoredElements;
+
+    await act(async () => {
+      await window.collab.saveCollabRoomToFirebase(
+        toBrandedType([h.elements[0]]),
+      );
+    });
+
+    expect(h.elements[0].x).toBe(150);
+    expect(getSceneVersion(staleStoredElements)).toBeLessThan(
+      getSceneVersion(h.elements),
+    );
   });
 });
