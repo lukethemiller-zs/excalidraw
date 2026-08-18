@@ -1,29 +1,30 @@
-## 🚀 Adobe Whiteboard — Focus Mode, Inspiration Panel & Adobe rebrand
+## 🚀 Focus Timer for Workshops & Adobe Red Toolbar
 
 ### What's changed
 
-- **Focus Mode** — a new spotlight view that dims every canvas element except the current selection. Toggle it with `Alt+F` or from Main menu → Preferences. It works in view mode, is hidden on phones, and is off by default (the setting is not persisted between sessions).
-- **Inspiration Panel** — a new "✨ Inspiration" button in the top-right UI opens a popover with three static suggestion cards. This is a cosmetic prototype only.
-- **Adobe rebrand** — the app is now "Adobe Whiteboard": Adobe red (`#EB1000`) replaces the purple accent throughout, the logo is the Adobe "A" mark and wordmark, and the favicon, page title, social meta tags and user-facing strings were updated to match. The logo also now appears in the top-left once the welcome screen is dismissed.
-- **UI typography** — interface chrome (menus, dialogs, tooltips, frame labels) now renders in Century Gothic.
-- **Toolbar and canvas polish** — the arrow and ellipse tools swapped positions (arrow is now `4`, ellipse `5`), the shape toolbar background matches the hamburger menu grey, and the default canvas background is off-white (`#f8f9fa`) instead of pure white.
+A workshop countdown timer is built into the whiteboard as a top-right overlay (`<FocusTimer />` in `excalidraw-app` `App.tsx`). Click the **Timer** button (static label; Adobe red) to open a panel with preset durations (1, 5, 10, 15 minutes), a custom minutes input (≥1, no UI max), and **Start / Pause / Resume / Reset**. A large `m:ss` readout shows remaining time; on expiry the panel flashes and shows **Time's up!** with an optional short beep.
+
+The shapes toolbar (`.Island.App-toolbar`) uses `--color-primary` (Adobe red `#EB1000` in light theme) with white icons/keybindings, white-pill selected states, and matching hover/divider/eraser/extra-tools contrast. Dark theme uses `--color-primary-darker` for the toolbar background.
 
 ### User impact
 
-Focus Mode is the substantive addition: on a busy board it removes the visual noise around whatever you're working on, which helps during reviews and screen-shares without needing to hide or move anything. The rebrand and toolbar changes give the app a consistent Adobe identity, and the arrow tool moving one slot left puts a more frequently used tool in easier reach.
+Facilitators can run timed brainstorming, voting, and ideation exercises without leaving the canvas. The local countdown stays on-screen while drawing continues. The toolbar reads clearly as Adobe Whiteboard branding and is easier to spot in workshops and screen-shares.
 
 ### Technical notes
 
-Focus Mode adds a `focusModeEnabled` flag to app state and reuses the existing `reduceAlphaForSelection` path in `renderElement`, so dimming only kicks in when there is an active selection and no new render pass was introduced. It is registered as a standard action with a menu checkbox and shortcut entry, so it picks up command palette and help dialog integration for free. The font change is applied centrally via a new `UI_FONT_FAMILY` constant that `getFontFamilyString` returns for the Assistant font family, meaning it applies without touching individual components. The Inspiration Panel is self-contained and deliberately has no API calls, persistence or canvas side-effects.
+- App-only overlay — the published `@excalidraw/excalidraw` library behaviour is unchanged aside from `Toolbar.scss` theming.
+- Timestamp-based countdown (`Date.now()` + 250 ms tick) so the timer stays accurate under tab throttling.
+- Overlay uses `pointer-events: none` on the container so canvas editing is unaffected; trigger/panel re-enable pointer events.
+- Toolbar colours come from theme CSS variables (`--color-primary` / `--color-primary-darker`), not a hard-coded hex in `Toolbar.scss`.
 
 ### Testing
 
-Full suite run: **1461 passed, 2 failed, 48 skipped** across 107 test files. Existing snapshot suites were regenerated to absorb the branding, colour and toolbar-ordering changes. No new automated tests were added for Focus Mode, the Inspiration Panel or the rebrand, so those features are covered by manual checks only.
+- **7 unit tests** in `FocusTimer.test.tsx` — formatting, presets, start, pause, resume, reset, and expiry (all passing).
+- Manual: Timer 1m start/pause/resume/reset + canvas drawing unaffected; expiry flash + **Time's up!** + beep; light-mode red toolbar with white icons/selected pills.
 
 ### Known limitations
 
-- **Two regression tests are failing.** `key 4 selects ellipse tool` and `key 5 selects arrow tool` in `regressionTests.test.tsx` still assert the old tool order; the arrow/ellipse swap changed the numeric keys but the test table was never updated. The letter shortcuts (`O`, `A`) are unaffected. This is a stale test, not a product defect, but it leaves `master` red.
-- **Typecheck is failing on `master`.** `excalidraw-app/components/BrainstormMode.tsx` imports `useAdobeWhiteboardAPI` from `@excalidraw/excalidraw`, but the package exports `useExcalidrawAPI`. `yarn test:typecheck` exits with `TS2305`.
-- **Brainstorm Mode is not shipping.** The component exists but is never rendered anywhere in the app, so the advertised `Cmd/Ctrl+Shift+B` sticky-note capture is unreachable. It is excluded from this release.
-- Focus Mode is deliberately unavailable on phone form factors and its state resets on reload.
-- The Inspiration Panel suggestions are hardcoded and do nothing when clicked beyond closing the popover.
+- **Local-only:** each user runs their own timer; the countdown is not synced to collaborators and is not persisted across reloads.
+- English-only hardcoded UI strings; no keyboard shortcut.
+- Dark theme toolbar uses `#FF6B57` / `#FF836F` (`--color-primary` / `--color-primary-darker`), not light-mode `#EB1000`.
+- Beep is best-effort (may be blocked by browser autoplay policies).
