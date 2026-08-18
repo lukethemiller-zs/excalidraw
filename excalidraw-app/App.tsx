@@ -102,6 +102,7 @@ import Collab, {
 import { AppFooter } from "./components/AppFooter";
 import { AppMainMenu } from "./components/AppMainMenu";
 import { AppWelcomeScreen } from "./components/AppWelcomeScreen";
+import { FocusTimer } from "./components/FocusTimer";
 import {
   ExportToExcalidrawPlus,
   exportToExcalidrawPlus,
@@ -1039,6 +1040,7 @@ const ExcalidrawWrapper = () => {
           )}
         </OverwriteConfirmDialog>
         <AppFooter onChange={() => excalidrawAPI?.refresh()} />
+        <FocusTimer />
         {excalidrawAPI && <AIComponents excalidrawAPI={excalidrawAPI} />}
 
         <TTDDialogTrigger />
