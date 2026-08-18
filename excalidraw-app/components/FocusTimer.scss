@@ -1,0 +1,178 @@
+@use "../../packages/excalidraw/css/variables.module" as *;
+
+.focus-timer {
+  position: absolute;
+  top: var(--editor-container-padding, 1rem);
+  right: var(--editor-container-padding, 1rem);
+  z-index: var(--zIndex-layerUI);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  // Let canvas clicks pass through; only the trigger and panel capture events.
+  pointer-events: none;
+
+  &__trigger,
+  &__panel {
+    pointer-events: auto;
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--lg-button-size);
+    padding: 0 0.875rem;
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 0 0 1px var(--color-surface-lowest);
+    background-color: var(--color-primary);
+    color: var(--color-icon-white);
+    font-family: var(--ui-font);
+    font-size: 0.8333rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color-primary-hover);
+    }
+
+    &:active {
+      background-color: var(--color-primary-darker);
+    }
+  }
+
+  &__panel {
+    min-width: 220px;
+    padding: 0.75rem;
+    border-radius: var(--border-radius-lg);
+    background-color: var(--island-bg-color);
+    box-shadow: var(--shadow-island);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    &--expired {
+      background-color: var(--color-primary-light);
+      animation: focus-timer-expired-flash 0.6s ease-in-out 3;
+    }
+  }
+
+  &__readout {
+    margin: 0;
+    font-family: var(--ui-font);
+    font-size: 2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--color-on-surface);
+  }
+
+  &__expired-label {
+    margin: 0;
+    font-family: var(--ui-font);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-primary);
+  }
+
+  &__presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    justify-content: center;
+  }
+
+  &__preset {
+    padding: 0.375rem 0.625rem;
+    border: 1px solid var(--color-border-outline-variant);
+    border-radius: var(--border-radius-md);
+    background: transparent;
+    color: var(--color-on-surface);
+    font-family: var(--ui-font);
+    font-size: 0.8125rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color-surface-high);
+    }
+
+    &--selected {
+      border-color: var(--color-primary);
+      background-color: var(--color-primary-light);
+      color: var(--color-primary-darker);
+      font-weight: 600;
+    }
+  }
+
+  &__custom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__custom-label {
+    font-family: var(--ui-font);
+    font-size: 0.75rem;
+    color: var(--color-gray-60);
+  }
+
+  &__custom-input {
+    padding: 0.375rem 0.5rem;
+    border: 1px solid var(--color-border-outline-variant);
+    border-radius: var(--border-radius-md);
+    font-family: var(--ui-font);
+    font-size: 0.875rem;
+    background-color: var(--input-bg-color);
+    color: var(--color-on-surface);
+
+    &:focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
+  }
+
+  &__controls {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  &__control {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border-outline-variant);
+    border-radius: var(--border-radius-md);
+    background: transparent;
+    color: var(--color-on-surface);
+    font-family: var(--ui-font);
+    font-size: 0.875rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color-surface-high);
+    }
+
+    &--primary {
+      border-color: var(--color-primary);
+      background-color: var(--color-primary);
+      color: var(--color-icon-white);
+      font-weight: 600;
+
+      &:hover {
+        background-color: var(--color-primary-hover);
+      }
+    }
+  }
+}
+
+@keyframes focus-timer-expired-flash {
+  0%,
+  100% {
+    background-color: var(--color-primary-light);
+  }
+  50% {
+    background-color: var(--color-primary-light-darker);
+  }
+}
