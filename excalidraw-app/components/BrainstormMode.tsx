@@ -1,58 +1,24 @@
 import {
   CaptureUpdateAction,
   convertToExcalidrawElements,
-  useAdobeWhiteboardAPI,
+  useExcalidrawAPI,
 } from "@excalidraw/excalidraw";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// #region agent log
-fetch('http://127.0.0.1:7593/ingest/9bf2aae7-3da4-4585-9525-b80866c1ecc1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'bb91c7'},body:JSON.stringify({sessionId:'bb91c7',runId:'pre-fix',hypothesisId:'C',location:'excalidraw-app/components/BrainstormMode.tsx:module',message:'BrainstormMode module evaluated',data:{useAdobeWhiteboardAPIType:typeof useAdobeWhiteboardAPI},timestamp:Date.now()})}).catch(()=>{});
-// #endregion
+import {
+  getStickyPosition,
+  isBrainstormToggle,
+  isEditableTarget,
+  STICKY_HEIGHT,
+  STICKY_WIDTH,
+} from "./brainstormModeHelpers";
 
 const STICKY_PALETTE = ["#fff3bf", "#ffc9c9", "#a5d8ff", "#b2f2bb"];
-const STICKY_WIDTH = 180;
-const STICKY_HEIGHT = 120;
-const CASCADE_STEP = 30;
-const CASCADE_WRAP = 8;
 
-const isEditableTarget = (target: EventTarget | null) => {
-  if (!(target instanceof HTMLElement)) {
-    return false;
-  }
-  return (
-    target.isContentEditable ||
-    target.tagName === "INPUT" ||
-    target.tagName === "TEXTAREA" ||
-    target.tagName === "SELECT"
-  );
-};
-
-const isBrainstormToggle = (event: KeyboardEvent) =>
-  event.code === "KeyB" &&
-  event.shiftKey &&
-  (event.metaKey || event.ctrlKey);
-
-const getStickyPosition = (
-  scrollX: number,
-  scrollY: number,
-  width: number,
-  height: number,
-  zoom: number,
-  dropIndex: number,
-) => {
-  const baseX = width / (2 * zoom) - scrollX - STICKY_WIDTH / 2;
-  const baseY = height / (2 * zoom) - scrollY - STICKY_HEIGHT / 2;
-  const col = dropIndex % CASCADE_WRAP;
-  const row = Math.floor(dropIndex / CASCADE_WRAP);
-
-  return {
-    x: baseX + col * CASCADE_STEP,
-    y: baseY + row * CASCADE_STEP,
-  };
-};
-
+/** Rapid sticky-note capture overlay toggled by Cmd/Ctrl+Shift+B. */
 export const BrainstormMode = () => {
-  const adobeWhiteboardAPI = useAdobeWhiteboardAPI();
+  // useExcalidrawAPI is the supported hook; useAdobeWhiteboardAPI never existed as an export.
+  const excalidrawAPI = useExcalidrawAPI();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -100,11 +66,11 @@ export const BrainstormMode = () => {
 
   const addSticky = useCallback(() => {
     const trimmedText = text.trim();
-    if (!trimmedText || !adobeWhiteboardAPI) {
+    if (!trimmedText || !excalidrawAPI) {
       return;
     }
 
-    const appState = adobeWhiteboardAPI.getAppState();
+    const appState = excalidrawAPI.getAppState();
     const { scrollX, scrollY, width, height, zoom } = appState;
     const { x, y } = getStickyPosition(
       scrollX,
@@ -138,9 +104,9 @@ export const BrainstormMode = () => {
       },
     ]);
 
-    adobeWhiteboardAPI.updateScene({
+    excalidrawAPI.updateScene({
       elements: [
-        ...adobeWhiteboardAPI.getSceneElementsIncludingDeleted(),
+        ...excalidrawAPI.getSceneElementsIncludingDeleted(),
         ...newElements,
       ],
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
@@ -150,7 +116,7 @@ export const BrainstormMode = () => {
     setDropIndex((prev) => prev + 1);
     setText("");
     requestAnimationFrame(() => inputRef.current?.focus());
-  }, [adobeWhiteboardAPI, colorIndex, dropIndex, text]);
+  }, [excalidrawAPI, colorIndex, dropIndex, text]);
 
   const onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
