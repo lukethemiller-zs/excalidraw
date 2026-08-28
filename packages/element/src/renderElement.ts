@@ -45,6 +45,7 @@ import type {
 import { getElementAbsoluteCoords, getElementBounds } from "./bounds";
 import { getUncroppedImageElement } from "./cropElement";
 import { LinearElementEditor } from "./linearElementEditor";
+import { shouldReduceAlphaForSelection } from "./selectionDimming";
 import {
   getBoundTextElement,
   getContainerCoords,
@@ -786,12 +787,10 @@ export const renderElement = (
   renderConfig: StaticCanvasRenderConfig,
   appState: StaticCanvasAppState | InteractiveCanvasAppState,
 ) => {
-  const reduceAlphaForSelection =
-    (appState.openDialog?.name === "elementLinkSelector" ||
-      (appState.focusModeEnabled &&
-        Object.keys(appState.selectedElementIds).length > 0)) &&
-    !appState.selectedElementIds[element.id] &&
-    !appState.hoveredElementIds[element.id];
+  const reduceAlphaForSelection = shouldReduceAlphaForSelection(
+    element.id,
+    appState,
+  );
 
   context.globalAlpha = getRenderOpacity(
     element,
