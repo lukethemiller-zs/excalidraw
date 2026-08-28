@@ -85,6 +85,7 @@ export * from "./resizeElements";
 export * from "./resizeTest";
 export * from "./Scene";
 export * from "./selection";
+export * from "./selectionDimming";
 export * from "./shape";
 export * from "./showSelectedShapeActions";
 export * from "./sizeHelpers";
